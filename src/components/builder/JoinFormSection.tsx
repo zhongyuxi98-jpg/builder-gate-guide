@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { SectionHeading } from "./SectionHeading";
 import { Send, CheckCircle2, Loader2 } from "lucide-react";
+import { BuilderCardPreview } from "./CertificateSection";
+import { BuilderCardDownload } from "./BuilderCardDownload";
 
 interface FormData {
   name: string;
