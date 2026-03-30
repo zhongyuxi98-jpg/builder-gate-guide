@@ -6,6 +6,9 @@ import { IncentiveSection } from "@/components/builder/IncentiveSection";
 import { ContentRulesSection } from "@/components/builder/ContentRulesSection";
 import { ImpeachmentSection } from "@/components/builder/ImpeachmentSection";
 import { RoadmapSection } from "@/components/builder/RoadmapSection";
+import { ApplicationStandardsSection } from "@/components/builder/ApplicationStandardsSection";
+import { ContributionChannelsSection } from "@/components/builder/ContributionChannelsSection";
+import { JoinFormSection } from "@/components/builder/JoinFormSection";
 import { BuilderNav } from "@/components/builder/BuilderNav";
 
 const BuilderPortal = () => {
@@ -20,7 +23,10 @@ const BuilderPortal = () => {
         <IncentiveSection />
         <ContentRulesSection />
         <ImpeachmentSection />
+        <ApplicationStandardsSection />
+        <ContributionChannelsSection />
         <RoadmapSection />
+        <JoinFormSection />
       </div>
     </div>
   );
