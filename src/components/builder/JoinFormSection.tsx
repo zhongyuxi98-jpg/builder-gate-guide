@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { SectionHeading } from "./SectionHeading";
 import { Send, CheckCircle2, Loader2 } from "lucide-react";
+import { BuilderCardPreview } from "./CertificateSection";
+import { BuilderCardDownload } from "./BuilderCardDownload";
 
 interface FormData {
   name: string;
@@ -43,6 +45,7 @@ export const JoinFormSection = () => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [applicantNumber] = useState(() => Math.floor(Math.random() * 200) + 1);
 
   const toggleSkill = (skill: string) => {
     setForm((prev) => ({
@@ -88,11 +91,28 @@ export const JoinFormSection = () => {
     return (
       <section>
         <SectionHeading id="join" number="九" title="加入申请" />
-        <div className="rounded-xl bg-card border border-border p-12 text-center shadow-elevated">
-          <CheckCircle2 size={48} className="text-primary mx-auto mb-4" />
-          <h3 className="font-serif-cn text-2xl font-bold text-foreground mb-2">申请已提交！</h3>
-          <p className="text-muted-foreground mb-2">感谢你愿意成为知识之门的建设者。</p>
-          <p className="text-sm text-muted-foreground">我们将在 3-5 个工作日内通过邮箱与你联系。</p>
+        <div className="rounded-xl bg-card border border-border p-8 md:p-12 shadow-elevated space-y-8">
+          <div className="text-center">
+            <CheckCircle2 size={48} className="text-primary mx-auto mb-4" />
+            <h3 className="font-serif-cn text-2xl font-bold text-foreground mb-2">申请已提交！</h3>
+            <p className="text-muted-foreground mb-1">感谢你愿意成为知识之门的建设者。</p>
+            <p className="text-sm text-muted-foreground">我们将在 3-5 个工作日内通过邮箱与你联系。</p>
+          </div>
+
+          {/* Builder Card Preview */}
+          <div>
+            <h4 className="font-serif-cn font-semibold text-foreground text-center mb-4">
+              你的专属建设者身份卡
+            </h4>
+            <div className="max-w-md mx-auto">
+              <BuilderCardPreview name={form.name || "建设者"} number={applicantNumber} />
+            </div>
+          </div>
+
+          {/* Download */}
+          <div className="max-w-md mx-auto">
+            <BuilderCardDownload name={form.name || "建设者"} number={applicantNumber} />
+          </div>
         </div>
       </section>
     );

@@ -7,7 +7,7 @@ const navItems = [
   { label: "激励机制", href: "#incentives" },
   { label: "申请标准", href: "#standards" },
   { label: "贡献渠道", href: "#channels" },
-  { label: "路线图", href: "#roadmap" },
+  { label: "荣誉证书", href: "#certificate" },
   { label: "加入申请", href: "#join" },
 ];
 

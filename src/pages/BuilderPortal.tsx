@@ -8,6 +8,7 @@ import { ImpeachmentSection } from "@/components/builder/ImpeachmentSection";
 import { RoadmapSection } from "@/components/builder/RoadmapSection";
 import { ApplicationStandardsSection } from "@/components/builder/ApplicationStandardsSection";
 import { ContributionChannelsSection } from "@/components/builder/ContributionChannelsSection";
+import { CertificateSection } from "@/components/builder/CertificateSection";
 import { JoinFormSection } from "@/components/builder/JoinFormSection";
 import { BuilderNav } from "@/components/builder/BuilderNav";
 
@@ -25,6 +26,7 @@ const BuilderPortal = () => {
         <ImpeachmentSection />
         <ApplicationStandardsSection />
         <ContributionChannelsSection />
+        <CertificateSection />
         <RoadmapSection />
         <JoinFormSection />
       </div>
