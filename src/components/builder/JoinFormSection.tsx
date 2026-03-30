@@ -45,6 +45,7 @@ export const JoinFormSection = () => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [applicantNumber] = useState(() => Math.floor(Math.random() * 200) + 1);
 
   const toggleSkill = (skill: string) => {
     setForm((prev) => ({
