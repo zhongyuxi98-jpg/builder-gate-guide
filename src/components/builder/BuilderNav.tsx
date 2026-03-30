@@ -3,12 +3,12 @@ import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "组织精神", href: "#spirit" },
-  { label: "协议产生", href: "#protocol" },
   { label: "三权结构", href: "#three-powers" },
   { label: "激励机制", href: "#incentives" },
-  { label: "内容归属", href: "#content-rules" },
-  { label: "纠错机制", href: "#impeachment" },
+  { label: "申请标准", href: "#standards" },
+  { label: "贡献渠道", href: "#channels" },
   { label: "路线图", href: "#roadmap" },
+  { label: "加入申请", href: "#join" },
 ];
 
 export const BuilderNav = () => {
