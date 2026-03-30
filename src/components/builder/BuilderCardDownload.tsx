@@ -107,7 +107,7 @@ export const BuilderCardDownload = ({ name, number }: BuilderCardDownloadProps) 
     // Quote
     ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
     ctx.font = "italic 15px system-ui, serif";
-    ctx.fillText(""门永远开着。你的到来，让这扇门更加明亮。"", 44, 290);
+    ctx.fillText("\u201C\u95E8\u6C38\u8FDC\u5F00\u7740\u3002\u4F60\u7684\u5230\u6765\uFF0C\u8BA9\u8FD9\u6247\u95E8\u66F4\u52A0\u660E\u4EAE\u3002\u201D", 44, 290);
 
     ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.font = "italic 13px system-ui, serif";
