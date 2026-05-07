@@ -13,7 +13,7 @@ const Section = ({ id, num, title, children }: { id: string; num: string; title:
   </section>
 );
 
-const Rule = ({ n, children }: { n: string | number; children: React.ReactNode }) => (
+const Rule = ({ n, children }: { n: React.ReactNode; children: React.ReactNode }) => (
   <Card className="p-4 flex gap-3">
     <div className="font-serif-cn text-primary font-bold w-6 shrink-0">{n}</div>
     <div className="text-sm leading-relaxed">{children}</div>
