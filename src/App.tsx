@@ -7,6 +7,9 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import BuilderPortal from "./pages/BuilderPortal.tsx";
 import TechStack from "./pages/TechStack.tsx";
+import ObsidianGuide from "./pages/ObsidianGuide.tsx";
+import MarkdownGuide from "./pages/MarkdownGuide.tsx";
+import TeachingSpec from "./pages/TeachingSpec.tsx";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +23,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/builder" element={<BuilderPortal />} />
           <Route path="/tech-stack" element={<TechStack />} />
+          <Route path="/learn/obsidian" element={<ObsidianGuide />} />
+          <Route path="/learn/markdown" element={<MarkdownGuide />} />
+          <Route path="/teaching-spec" element={<TeachingSpec />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
