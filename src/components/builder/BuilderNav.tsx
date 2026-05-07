@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const navItems = [
   { label: "组织精神", href: "#spirit" },
@@ -32,6 +33,12 @@ export const BuilderNav = () => {
               {item.label}
             </a>
           ))}
+          <Link
+            to="/tech-stack"
+            className="text-sm text-primary font-semibold hover:underline"
+          >
+            技术栈 →
+          </Link>
         </div>
 
         {/* Mobile toggle */}
@@ -56,6 +63,13 @@ export const BuilderNav = () => {
               {item.label}
             </a>
           ))}
+          <Link
+            to="/tech-stack"
+            onClick={() => setOpen(false)}
+            className="block text-sm text-primary font-semibold"
+          >
+            技术栈 →
+          </Link>
         </div>
       )}
     </nav>
