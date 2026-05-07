@@ -21,6 +21,7 @@ const currentStack: StackItem[] = [
     tool: "Obsidian / VSCode + Markdown",
     desc: "不会代码的老师用 Obsidian 写,你用 VSCode + AI 辅助写",
     learn: [
+      { label: "📄 教案模板 v2(主推 · 站内)", url: "/lesson-template" },
       { label: "Obsidian 入门(站内)", url: "/learn/obsidian" },
       { label: "Markdown 语法(站内)", url: "/learn/markdown" },
       { label: "教学管理规范", url: "/teaching-spec" },
