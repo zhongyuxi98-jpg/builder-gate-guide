@@ -1,5 +1,6 @@
 import { BuilderNav } from "@/components/builder/BuilderNav";
 import { ExternalLink } from "lucide-react";
+import { useState, useMemo } from "react";
 
 type Project = {
   name: string;
@@ -51,7 +52,7 @@ const groups: Group[] = [
   },
   {
     title: "教师 / 流程化教学",
-    subtitle: "把人工教师用流程化替代",
+    subtitle: "教师无法被替代;流程化是教育质量底线的确定性保障",
     items: [
       { name: "EduFlow Companion", cn: "教学管理流程", url: "https://teach-nexus-flow.lovable.app" },
       { name: "Learn Flow", cn: "教学网站模版", url: "https://flowteach-bot.lovable.app" },
