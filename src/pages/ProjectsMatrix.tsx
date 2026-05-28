@@ -221,7 +221,15 @@ const ProjectsMatrix = () => {
                     opacity={dim ? 0.3 : 1}
                     onMouseEnter={() => setHover(n.id)}
                     onMouseLeave={() => setHover((h) => (h === n.id ? null : h))}
-                    onClick={() => n.url && window.open(n.url, "_blank", "noopener,noreferrer")}
+                    onClick={() => {
+                      if (n.url) {
+                        window.open(n.url, "_blank", "noopener,noreferrer");
+                      } else if (n.kind === "cat") {
+                        const gi = n.id.split("-")[1];
+                        const el = document.getElementById(`group-${gi}`);
+                        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }}
                   >
                     <circle
                       r={n.r + (isHover ? 4 : 0)}
@@ -291,7 +299,11 @@ const ProjectsMatrix = () => {
         {/* ===== Legend ===== */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3">
           {groups.map((g, gi) => (
-            <div key={g.title} className="flex items-start gap-3 p-3 rounded-md border border-border bg-card/40">
+            <a
+              key={g.title}
+              href={`#group-${gi}`}
+              className="flex items-start gap-3 p-3 rounded-md border border-border bg-card/40 hover:border-primary transition-colors"
+            >
               <span
                 className="mt-1 w-3 h-3 rounded-full flex-shrink-0"
                 style={{ background: catColors[gi % catColors.length] }}
@@ -301,7 +313,47 @@ const ProjectsMatrix = () => {
                 <p className="text-xs text-muted-foreground mt-0.5">{g.subtitle}</p>
                 <p className="text-[11px] text-muted-foreground/60 mt-1">{g.items.length} 个项目</p>
               </div>
-            </div>
+            </a>
+          ))}
+        </div>
+
+        {/* ===== Expanded list (always-visible cards) ===== */}
+        <div className="mt-16 space-y-14">
+          {groups.map((g, gi) => (
+            <section key={g.title} id={`group-${gi}`} className="scroll-mt-24">
+              <div className="mb-5 flex items-start gap-3">
+                <span
+                  className="mt-2 w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ background: catColors[gi % catColors.length] }}
+                />
+                <div>
+                  <h2 className="font-serif-cn text-2xl font-bold text-foreground">{g.title}</h2>
+                  <p className="text-sm text-muted-foreground mt-1">{g.subtitle}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {g.items.map((p) => (
+                  <a
+                    key={p.url}
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block p-5 border border-border rounded-md bg-card hover:border-primary hover:shadow-md transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
+                        {p.cn ?? p.name}
+                      </h3>
+                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1" />
+                    </div>
+                    {p.cn && <p className="text-xs text-muted-foreground mb-2">{p.name}</p>}
+                    <p className="text-xs text-muted-foreground/70 truncate">
+                      {p.url.replace("https://", "")}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
 
