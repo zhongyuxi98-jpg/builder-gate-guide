@@ -82,55 +82,226 @@ const groups: Group[] = [
 
 const ProjectsMatrix = () => {
   const total = groups.reduce((s, g) => s + g.items.length, 0);
+  const [hover, setHover] = useState<string | null>(null);
+
+  // ---- Graph layout ----
+  const W = 1400;
+  const H = 1100;
+  const CX = W / 2;
+  const CY = H / 2;
+  const R_CAT = 340;
+  const R_PROJ = 150;
+
+  // Palette of category colors (HSL via CSS vars + a few accents)
+  const catColors = [
+    "hsl(var(--primary))",
+    "hsl(var(--accent))",
+    "hsl(38 70% 55%)",
+    "hsl(200 65% 55%)",
+    "hsl(160 50% 50%)",
+    "hsl(290 45% 60%)",
+  ];
+
+  type Node = {
+    id: string;
+    x: number;
+    y: number;
+    label: string;
+    sub?: string;
+    color: string;
+    r: number;
+    url?: string;
+    kind: "hub" | "cat" | "proj";
+    parentId?: string;
+  };
+  type Edge = { from: { x: number; y: number }; to: { x: number; y: number }; color: string; key: string };
+
+  const { nodes, edges } = useMemo(() => {
+    const nodes: Node[] = [];
+    const edges: Edge[] = [];
+
+    const hub = { id: "__hub", x: CX, y: CY, label: "知识之门", sub: "Gateway", color: "hsl(var(--foreground))", r: 46, kind: "hub" as const };
+    nodes.push(hub);
+
+    groups.forEach((g, gi) => {
+      // start at top, distribute evenly
+      const theta = (gi / groups.length) * Math.PI * 2 - Math.PI / 2;
+      const cx = CX + R_CAT * Math.cos(theta);
+      const cy = CY + R_CAT * Math.sin(theta);
+      const color = catColors[gi % catColors.length];
+      const catId = `cat-${gi}`;
+      nodes.push({ id: catId, x: cx, y: cy, label: g.title, sub: g.subtitle, color, r: 28, kind: "cat", parentId: hub.id });
+      edges.push({ from: { x: hub.x, y: hub.y }, to: { x: cx, y: cy }, color, key: `e-${catId}` });
+
+      const n = g.items.length;
+      // Fan arc outward from center direction; widen with item count
+      const arcSpan = Math.min(Math.max(n * 14, 60), 160) * (Math.PI / 180);
+      const start = theta - arcSpan / 2;
+      const step = n > 1 ? arcSpan / (n - 1) : 0;
+      g.items.forEach((p, pi) => {
+        const a = n > 1 ? start + pi * step : theta;
+        const px = cx + R_PROJ * Math.cos(a);
+        const py = cy + R_PROJ * Math.sin(a);
+        const pid = `p-${gi}-${pi}`;
+        nodes.push({
+          id: pid,
+          x: px,
+          y: py,
+          label: p.cn ?? p.name,
+          sub: p.cn ? p.name : undefined,
+          color,
+          r: 9,
+          url: p.url,
+          kind: "proj",
+          parentId: catId,
+        });
+        edges.push({ from: { x: cx, y: cy }, to: { x: px, y: py }, color, key: `e-${pid}` });
+      });
+    });
+
+    return { nodes, edges };
+  }, []);
+
+  const activeId = hover;
+  const activeNode = activeId ? nodes.find((n) => n.id === activeId) : null;
 
   return (
     <div className="min-h-screen bg-background">
       <BuilderNav />
-      <div className="max-w-5xl mx-auto px-6 py-16">
+      <div className="max-w-6xl mx-auto px-6 py-16">
         <header className="mb-12 pb-8 border-b border-border">
           <p className="text-xs tracking-[0.3em] text-muted-foreground uppercase mb-3">
-            Projects Matrix · 项目矩阵
+            Projects Network · 项目网络图谱
           </p>
           <h1 className="font-serif-cn text-4xl md:text-5xl font-bold text-foreground mb-4">
-            知识之门 · 全项目地图
+            知识之门 · 全项目网络
           </h1>
           <p className="text-muted-foreground max-w-2xl leading-relaxed">
-            目前已发布 <span className="text-foreground font-semibold">{total}</span> 个公开项目,按主题分组。每一格都是一扇可以推开的门。
+            目前已发布 <span className="text-foreground font-semibold">{total}</span> 个公开项目,以网络图谱方式呈现。中心是「知识之门」,六条分支延伸至各主题,每一颗节点都是一扇可以推开的门。
           </p>
         </header>
 
-        <div className="space-y-16">
-          {groups.map((g) => (
-            <section key={g.title}>
-              <div className="mb-6">
-                <h2 className="font-serif-cn text-2xl font-bold text-foreground">{g.title}</h2>
-                <p className="text-sm text-muted-foreground mt-1">{g.subtitle}</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {g.items.map((p) => (
-                  <a
-                    key={p.url}
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block p-5 border border-border rounded-md bg-card hover:border-primary hover:shadow-md transition-all"
+        {/* ===== Network graph ===== */}
+        <div className="relative w-full rounded-lg border border-border bg-card/40 overflow-hidden">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto block">
+            {/* edges */}
+            <g>
+              {edges.map((e) => {
+                const active =
+                  activeNode &&
+                  (e.key === `e-${activeNode.id}` ||
+                    (activeNode.parentId && e.key === `e-${activeNode.parentId}`) ||
+                    // sibling edges of hovered category
+                    (activeNode.kind === "cat" && e.key.startsWith(`e-p-${activeNode.id.split("-")[1]}-`)));
+                return (
+                  <line
+                    key={e.key}
+                    x1={e.from.x}
+                    y1={e.from.y}
+                    x2={e.to.x}
+                    y2={e.to.y}
+                    stroke={e.color}
+                    strokeOpacity={active ? 0.9 : activeNode ? 0.12 : 0.35}
+                    strokeWidth={active ? 1.6 : 1}
+                  />
+                );
+              })}
+            </g>
+            {/* nodes */}
+            <g>
+              {nodes.map((n) => {
+                const dim = activeNode && activeNode.id !== n.id && activeNode.parentId !== n.id && n.parentId !== activeNode.id && !(activeNode.kind === "cat" && n.parentId === activeNode.id);
+                const isHover = activeNode?.id === n.id;
+                const showLabel = n.kind !== "proj" || isHover;
+                return (
+                  <g
+                    key={n.id}
+                    transform={`translate(${n.x} ${n.y})`}
+                    className={n.url ? "cursor-pointer" : "cursor-default"}
+                    opacity={dim ? 0.3 : 1}
+                    onMouseEnter={() => setHover(n.id)}
+                    onMouseLeave={() => setHover((h) => (h === n.id ? null : h))}
+                    onClick={() => n.url && window.open(n.url, "_blank", "noopener,noreferrer")}
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
-                        {p.cn ?? p.name}
-                      </h3>
-                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1" />
-                    </div>
-                    {p.cn && (
-                      <p className="text-xs text-muted-foreground mb-2">{p.name}</p>
+                    <circle
+                      r={n.r + (isHover ? 4 : 0)}
+                      fill={n.kind === "hub" ? "hsl(var(--background))" : n.color}
+                      stroke={n.color}
+                      strokeWidth={n.kind === "hub" ? 3 : isHover ? 3 : 1.5}
+                    />
+                    {n.kind === "hub" && (
+                      <>
+                        <text textAnchor="middle" dy="-2" className="font-serif-cn" fontSize="20" fontWeight="700" fill="hsl(var(--foreground))">
+                          {n.label}
+                        </text>
+                        <text textAnchor="middle" dy="18" fontSize="10" letterSpacing="3" fill="hsl(var(--muted-foreground))">
+                          {n.sub}
+                        </text>
+                      </>
                     )}
-                    <p className="text-xs text-muted-foreground/70 truncate">
-                      {p.url.replace("https://", "")}
-                    </p>
-                  </a>
-                ))}
+                    {n.kind === "cat" && (
+                      <text
+                        textAnchor="middle"
+                        dy={n.y < CY ? -n.r - 10 : n.r + 22}
+                        className="font-serif-cn"
+                        fontSize="16"
+                        fontWeight="700"
+                        fill="hsl(var(--foreground))"
+                      >
+                        {n.label}
+                      </text>
+                    )}
+                    {showLabel && n.kind === "proj" && (
+                      <g pointerEvents="none">
+                        <text
+                          textAnchor="middle"
+                          dy={-n.r - 8}
+                          fontSize="12"
+                          fontWeight="600"
+                          fill="hsl(var(--foreground))"
+                          stroke="hsl(var(--background))"
+                          strokeWidth="4"
+                          paintOrder="stroke"
+                        >
+                          {n.label}
+                        </text>
+                      </g>
+                    )}
+                  </g>
+                );
+              })}
+            </g>
+          </svg>
+
+          {/* Hover info card */}
+          {activeNode && activeNode.kind === "proj" && (
+            <div className="absolute bottom-4 left-4 right-4 md:right-auto md:max-w-sm p-4 rounded-md border border-border bg-card shadow-lg backdrop-blur">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <h3 className="font-semibold text-foreground leading-snug">{activeNode.label}</h3>
+                <ExternalLink className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
               </div>
-            </section>
+              {activeNode.sub && <p className="text-xs text-muted-foreground mb-1">{activeNode.sub}</p>}
+              {activeNode.url && (
+                <p className="text-xs text-muted-foreground/70 truncate">{activeNode.url.replace("https://", "")}</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ===== Legend ===== */}
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3">
+          {groups.map((g, gi) => (
+            <div key={g.title} className="flex items-start gap-3 p-3 rounded-md border border-border bg-card/40">
+              <span
+                className="mt-1 w-3 h-3 rounded-full flex-shrink-0"
+                style={{ background: catColors[gi % catColors.length] }}
+              />
+              <div className="min-w-0">
+                <p className="font-serif-cn font-semibold text-foreground text-sm leading-snug">{g.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{g.subtitle}</p>
+                <p className="text-[11px] text-muted-foreground/60 mt-1">{g.items.length} 个项目</p>
+              </div>
+            </div>
           ))}
         </div>
 
