@@ -11,6 +11,7 @@ import ObsidianGuide from "./pages/ObsidianGuide.tsx";
 import MarkdownGuide from "./pages/MarkdownGuide.tsx";
 import TeachingSpec from "./pages/TeachingSpec.tsx";
 import LessonTemplate from "./pages/LessonTemplate.tsx";
+import ThinkingEssence from "./pages/ThinkingEssence.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/learn/markdown" element={<MarkdownGuide />} />
           <Route path="/teaching-spec" element={<TeachingSpec />} />
           <Route path="/lesson-template" element={<LessonTemplate />} />
+          <Route path="/thinking/essence" element={<ThinkingEssence />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
