@@ -45,6 +45,12 @@ export const BuilderNav = () => {
           >
             思考 →
           </Link>
+          <Link
+            to="/playbook/5min-sop"
+            className="text-sm text-primary font-semibold hover:underline"
+          >
+            速通 SOP →
+          </Link>
         </div>
 
         {/* Mobile toggle */}

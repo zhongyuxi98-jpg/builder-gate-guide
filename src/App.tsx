@@ -12,6 +12,7 @@ import MarkdownGuide from "./pages/MarkdownGuide.tsx";
 import TeachingSpec from "./pages/TeachingSpec.tsx";
 import LessonTemplate from "./pages/LessonTemplate.tsx";
 import ThinkingEssence from "./pages/ThinkingEssence.tsx";
+import FiveMinSOP from "./pages/FiveMinSOP.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/teaching-spec" element={<TeachingSpec />} />
           <Route path="/lesson-template" element={<LessonTemplate />} />
           <Route path="/thinking/essence" element={<ThinkingEssence />} />
+          <Route path="/playbook/5min-sop" element={<FiveMinSOP />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
