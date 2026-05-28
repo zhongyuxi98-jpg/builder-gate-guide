@@ -3,6 +3,7 @@ import { SectionHeading } from "./SectionHeading";
 import { Send, CheckCircle2, Loader2 } from "lucide-react";
 import { BuilderCardPreview } from "./CertificateSection";
 import { BuilderCardDownload } from "./BuilderCardDownload";
+import { useLang } from "@/lib/i18n";
 
 interface FormData {
   name: string;
@@ -15,27 +16,26 @@ interface FormData {
   message: string;
 }
 
-const skillOptions = [
-  "教学/学科内容",
-  "软件开发/编程",
-  "UI/UX 设计",
-  "翻译/本地化",
-  "运营/社区管理",
-  "视频制作",
-  "学术研究",
-  "法律/合规",
-  "其他",
-];
-
-const channelOptions = [
-  { value: "web", label: "网页直接贡献（Lovable 平台）" },
-  { value: "code", label: "代码贡献并入（GitHub）" },
-  { value: "link", label: "外部链接/资源推荐" },
-  { value: "meeting", label: "视频会议贡献（腾讯会议）" },
-  { value: "other", label: "其他方式" },
-];
-
 export const JoinFormSection = () => {
+  const { t } = useLang();
+  const skillOptions = [
+    t("教学/学科内容", "Teaching / Subject content"),
+    t("软件开发/编程", "Software dev / coding"),
+    t("UI/UX 设计", "UI/UX design"),
+    t("翻译/本地化", "Translation / localization"),
+    t("运营/社区管理", "Operations / community"),
+    t("视频制作", "Video production"),
+    t("学术研究", "Academic research"),
+    t("法律/合规", "Legal / compliance"),
+    t("其他", "Other"),
+  ];
+  const channelOptions = [
+    { value: "web", label: t("网页直接贡献（Lovable 平台）", "Web contribution (via Lovable)") },
+    { value: "code", label: t("代码贡献并入（GitHub）", "Code contribution (GitHub)") },
+    { value: "link", label: t("外部链接/资源推荐", "External link / resource recommendation") },
+    { value: "meeting", label: t("视频会议贡献（腾讯会议）", "Video-call contribution (Tencent Meeting)") },
+    { value: "other", label: t("其他方式", "Other") },
+  ];
   const [form, setForm] = useState<FormData>({
     name: "",
     email: "",
@@ -62,27 +62,27 @@ export const JoinFormSection = () => {
 
   const validate = (): boolean => {
     const e: Partial<Record<keyof FormData, string>> = {};
-    if (!form.name.trim()) e.name = "请填写姓名";
-    else if (form.name.trim().length > 100) e.name = "姓名不超过100字";
+    if (!form.name.trim()) e.name = t("请填写姓名", "Please enter your name");
+    else if (form.name.trim().length > 100) e.name = t("姓名不超过100字", "Name must be 100 characters or fewer");
 
     const hasEmail = form.email.trim().length > 0;
     const hasPhone = form.phone.trim().length > 0;
     const hasWechat = form.wechat.trim().length > 0;
     if (!hasEmail && !hasPhone && !hasWechat) {
-      e.email = "邮箱 / 电话 / 微信 至少填一项";
+      e.email = t("邮箱 / 电话 / 微信 至少填一项", "Provide at least one of: email / phone / WeChat");
     } else {
-      if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = "邮箱格式不正确";
-      if (hasPhone && !/^[+\d][\d\s\-()]{4,20}$/.test(form.phone.trim())) e.phone = "电话格式不正确";
-      if (hasWechat && form.wechat.trim().length > 50) e.wechat = "微信号过长";
+      if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = t("邮箱格式不正确", "Invalid email format");
+      if (hasPhone && !/^[+\d][\d\s\-()]{4,20}$/.test(form.phone.trim())) e.phone = t("电话格式不正确", "Invalid phone format");
+      if (hasWechat && form.wechat.trim().length > 50) e.wechat = t("微信号过长", "WeChat ID is too long");
     }
 
-    if (!form.background.trim()) e.background = "请简要介绍自己";
-    else if (form.background.trim().length > 1000) e.background = "不超过1000字";
+    if (!form.background.trim()) e.background = t("请简要介绍自己", "Please introduce yourself briefly");
+    else if (form.background.trim().length > 1000) e.background = t("不超过1000字", "1,000 characters max");
 
-    if (form.skills.length === 0) e.skills = "请至少选择一项技能";
-    if (!form.channel) e.channel = "请选择贡献渠道";
+    if (form.skills.length === 0) e.skills = t("请至少选择一项技能", "Please select at least one skill");
+    if (!form.channel) e.channel = t("请选择贡献渠道", "Please pick a contribution channel");
 
-    if (form.message.length > 2000) e.message = "不超过2000字";
+    if (form.message.length > 2000) e.message = t("不超过2000字", "2,000 characters max");
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -102,28 +102,28 @@ export const JoinFormSection = () => {
   if (submitted) {
     return (
       <section>
-        <SectionHeading id="join" number="九" title="加入申请" />
+        <SectionHeading id="join" number={t("九", "09")} title={t("加入申请", "Application")} />
         <div className="rounded-xl bg-card border border-border p-8 md:p-12 shadow-elevated space-y-8">
           <div className="text-center">
             <CheckCircle2 size={48} className="text-primary mx-auto mb-4" />
-            <h3 className="font-serif-cn text-2xl font-bold text-foreground mb-2">申请已提交！</h3>
-            <p className="text-muted-foreground mb-1">感谢你愿意成为知识之门的建设者。</p>
-            <p className="text-sm text-muted-foreground">我们将在 3-5 个工作日内通过邮箱与你联系。</p>
+            <h3 className="font-serif-cn text-2xl font-bold text-foreground mb-2">{t("申请已提交！", "Application submitted!")}</h3>
+            <p className="text-muted-foreground mb-1">{t("感谢你愿意成为知识之门的建设者。", "Thank you for choosing to become a builder of the Knowledge Gate.")}</p>
+            <p className="text-sm text-muted-foreground">{t("我们将在 3-5 个工作日内通过邮箱与你联系。", "We will be in touch within 3–5 business days.")}</p>
           </div>
 
           {/* Builder Card Preview */}
           <div>
             <h4 className="font-serif-cn font-semibold text-foreground text-center mb-4">
-              你的专属建设者身份卡
+              {t("你的专属建设者身份卡", "Your Builder ID Card")}
             </h4>
             <div className="max-w-md mx-auto">
-              <BuilderCardPreview name={form.name || "建设者"} number={applicantNumber} />
+              <BuilderCardPreview name={form.name || t("建设者", "Builder")} number={applicantNumber} />
             </div>
           </div>
 
           {/* Download */}
           <div className="max-w-md mx-auto">
-            <BuilderCardDownload name={form.name || "建设者"} number={applicantNumber} />
+            <BuilderCardDownload name={form.name || t("建设者", "Builder")} number={applicantNumber} />
           </div>
         </div>
       </section>
@@ -134,28 +134,28 @@ export const JoinFormSection = () => {
     <section>
       <SectionHeading
         id="join"
-        number="九"
-        title="加入申请"
-        subtitle="成为知识之门的建设者，与我们一起做一件想做一辈子的事"
+        number={t("九", "09")}
+        title={t("加入申请", "Application")}
+        subtitle={t("成为知识之门的建设者，与我们一起做一件想做一辈子的事", "Become a builder of the Knowledge Gate — do something worth a lifetime with us")}
       />
 
       <form onSubmit={handleSubmit} className="rounded-xl bg-card border border-border p-6 md:p-8 shadow-elevated space-y-6">
         {/* Name & Email */}
         <div className="grid md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">姓名 *</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("姓名 *", "Name *")}</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="你的姓名或昵称"
+              placeholder={t("你的姓名或昵称", "Your name or handle")}
               maxLength={100}
             />
             {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">邮箱</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("邮箱", "Email")}</label>
             <input
               type="email"
               value={form.email}
@@ -171,19 +171,19 @@ export const JoinFormSection = () => {
         {/* Phone & WeChat */}
         <div className="grid md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">电话</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("电话", "Phone")}</label>
             <input
               type="tel"
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
               className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="可填手机号"
+              placeholder={t("可填手机号", "Mobile number (optional)")}
               maxLength={32}
             />
             {errors.phone && <p className="text-destructive text-xs mt-1">{errors.phone}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">微信号</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("微信号", "WeChat")}</label>
             <input
               type="text"
               value={form.wechat}
@@ -196,18 +196,18 @@ export const JoinFormSection = () => {
           </div>
         </div>
         <p className="text-xs text-muted-foreground -mt-2">
-          邮箱 / 电话 / 微信 至少填写一项，方便我们与你联系。
+          {t("邮箱 / 电话 / 微信 至少填写一项，方便我们与你联系。", "Please provide at least one of email / phone / WeChat so we can reach you.")}
         </p>
 
         {/* Background */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">个人简介与背景 *</label>
+          <label className="block text-sm font-medium text-foreground mb-1.5">{t("个人简介与背景 *", "Personal intro & background *")}</label>
           <textarea
             value={form.background}
             onChange={(e) => setForm((f) => ({ ...f, background: e.target.value }))}
             rows={3}
             className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-            placeholder="简要介绍你的背景、经历、以及为什么想加入知识之门…"
+            placeholder={t("简要介绍你的背景、经历、以及为什么想加入知识之门…", "Briefly introduce your background, experience, and why you want to join the Knowledge Gate…")}
             maxLength={1000}
           />
           {errors.background && <p className="text-destructive text-xs mt-1">{errors.background}</p>}
@@ -215,7 +215,7 @@ export const JoinFormSection = () => {
 
         {/* Skills */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">可贡献技能 *（可多选）</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t("可贡献技能 *（可多选）", "Skills you can contribute * (multi-select)")}</label>
           <div className="flex flex-wrap gap-2">
             {skillOptions.map((skill) => (
               <button
@@ -237,7 +237,7 @@ export const JoinFormSection = () => {
 
         {/* Preferred Channel */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">首选贡献渠道 *</label>
+          <label className="block text-sm font-medium text-foreground mb-2">{t("首选贡献渠道 *", "Preferred contribution channel *")}</label>
           <div className="space-y-2">
             {channelOptions.map((opt) => (
               <label
@@ -265,13 +265,13 @@ export const JoinFormSection = () => {
 
         {/* Message */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">补充说明（可选）</label>
+          <label className="block text-sm font-medium text-foreground mb-1.5">{t("补充说明（可选）", "Additional notes (optional)")}</label>
           <textarea
             value={form.message}
             onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
             rows={3}
             className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-            placeholder="任何你想补充说明的内容…"
+            placeholder={t("任何你想补充说明的内容…", "Anything else you would like us to know…")}
             maxLength={2000}
           />
           {errors.message && <p className="text-destructive text-xs mt-1">{errors.message}</p>}
@@ -280,7 +280,10 @@ export const JoinFormSection = () => {
         {/* Commitment notice */}
         <div className="p-4 rounded-lg bg-muted border border-border">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            提交此申请即表示你已阅读并认同知识之门的治理协议精神。加入后你将签署正式的双向承诺书。你的信息仅用于审核申请，不会泄露给第三方。
+            {t(
+              "提交此申请即表示你已阅读并认同知识之门的治理协议精神。加入后你将签署正式的双向承诺书。你的信息仅用于审核申请，不会泄露给第三方。",
+              "By submitting, you acknowledge that you have read and agree with the spirit of the Knowledge Gate's governance protocol. Upon joining you will sign a formal mutual commitment. Your information is used only to review your application and will not be shared with third parties."
+            )}
           </p>
         </div>
 
@@ -293,12 +296,12 @@ export const JoinFormSection = () => {
           {submitting ? (
             <>
               <Loader2 size={16} className="animate-spin" />
-              提交中…
+              {t("提交中…", "Submitting…")}
             </>
           ) : (
             <>
               <Send size={16} />
-              提交建设者申请
+              {t("提交建设者申请", "Submit Builder Application")}
             </>
           )}
         </button>
