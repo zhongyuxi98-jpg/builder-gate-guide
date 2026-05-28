@@ -7,6 +7,8 @@ import { BuilderCardDownload } from "./BuilderCardDownload";
 interface FormData {
   name: string;
   email: string;
+  phone: string;
+  wechat: string;
   background: string;
   skills: string[];
   channel: string;
@@ -37,6 +39,8 @@ export const JoinFormSection = () => {
   const [form, setForm] = useState<FormData>({
     name: "",
     email: "",
+    phone: "",
+    wechat: "",
     background: "",
     skills: [],
     channel: "",
@@ -61,8 +65,16 @@ export const JoinFormSection = () => {
     if (!form.name.trim()) e.name = "请填写姓名";
     else if (form.name.trim().length > 100) e.name = "姓名不超过100字";
 
-    if (!form.email.trim()) e.email = "请填写邮箱";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = "邮箱格式不正确";
+    const hasEmail = form.email.trim().length > 0;
+    const hasPhone = form.phone.trim().length > 0;
+    const hasWechat = form.wechat.trim().length > 0;
+    if (!hasEmail && !hasPhone && !hasWechat) {
+      e.email = "邮箱 / 电话 / 微信 至少填一项";
+    } else {
+      if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = "邮箱格式不正确";
+      if (hasPhone && !/^[+\d][\d\s\-()]{4,20}$/.test(form.phone.trim())) e.phone = "电话格式不正确";
+      if (hasWechat && form.wechat.trim().length > 50) e.wechat = "微信号过长";
+    }
 
     if (!form.background.trim()) e.background = "请简要介绍自己";
     else if (form.background.trim().length > 1000) e.background = "不超过1000字";
@@ -143,7 +155,7 @@ export const JoinFormSection = () => {
             {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">邮箱 *</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">邮箱</label>
             <input
               type="email"
               value={form.email}
@@ -155,6 +167,37 @@ export const JoinFormSection = () => {
             {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
           </div>
         </div>
+
+        {/* Phone & WeChat */}
+        <div className="grid md:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1.5">电话</label>
+            <input
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+              className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="可填手机号"
+              maxLength={32}
+            />
+            {errors.phone && <p className="text-destructive text-xs mt-1">{errors.phone}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1.5">微信号</label>
+            <input
+              type="text"
+              value={form.wechat}
+              onChange={(e) => setForm((f) => ({ ...f, wechat: e.target.value }))}
+              className="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="WeChat ID"
+              maxLength={50}
+            />
+            {errors.wechat && <p className="text-destructive text-xs mt-1">{errors.wechat}</p>}
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground -mt-2">
+          邮箱 / 电话 / 微信 至少填写一项，方便我们与你联系。
+        </p>
 
         {/* Background */}
         <div>
