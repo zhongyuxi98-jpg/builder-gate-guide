@@ -59,6 +59,12 @@ export const BuilderNav = () => {
           >
             知识图谱 ↗
           </a>
+          <Link
+            to="/projects"
+            className="text-sm text-primary font-semibold hover:underline"
+          >
+            项目矩阵 →
+          </Link>
         </div>
 
         {/* Mobile toggle */}
