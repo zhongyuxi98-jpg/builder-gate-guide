@@ -51,6 +51,14 @@ export const BuilderNav = () => {
           >
             速通 SOP →
           </Link>
+          <a
+            href="https://learn-node-link.lovable.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-primary font-semibold hover:underline"
+          >
+            知识图谱 ↗
+          </a>
         </div>
 
         {/* Mobile toggle */}
@@ -82,6 +90,15 @@ export const BuilderNav = () => {
           >
             技术栈 →
           </Link>
+          <a
+            href="https://learn-node-link.lovable.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setOpen(false)}
+            className="block text-sm text-primary font-semibold"
+          >
+            知识图谱 ↗
+          </a>
         </div>
       )}
     </nav>
