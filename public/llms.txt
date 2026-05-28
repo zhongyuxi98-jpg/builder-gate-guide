@@ -1,0 +1,19 @@
+# 知识之门 · 建设者门户
+
+> 一个面向学习与教学协作的开放系统：组织精神、三权治理、激励机制与贡献渠道，连接独立开发者、教师与研究者共同建设「知识之门」生态。
+
+## Pages
+
+- [首页 / Home](/): 项目入口与简介。
+- [建设者门户 / Builder Portal](/builder): 组织精神、三权结构、激励机制、申请标准、贡献渠道、荣誉证书与加入申请。
+- [项目网络图谱 / Projects](/projects): 全部公开项目的网络图谱与分类卡片。
+- [技术栈 / Tech Stack](/tech-stack): 项目所用的技术与工具。
+- [思考本质 / Thinking Essence](/thinking/essence): 关于「造门」与学习的方法论。
+- [5 分钟速通 SOP](/playbook/5min-sop): 快速上手的标准流程。
+- [教学规范 / Teaching Spec](/teaching-spec): 教学内容与流程化规范。
+- [课件模板 / Lesson Template](/lesson-template): 标准课件模板说明。
+
+## Optional
+
+- [Obsidian 指南](/learn/obsidian): 本地知识库工具入门。
+- [Markdown 指南](/learn/markdown): Markdown 语法速查。

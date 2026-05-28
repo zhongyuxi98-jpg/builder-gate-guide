@@ -71,6 +71,8 @@ export const BuilderNav = () => {
         <button
           onClick={() => setOpen(!open)}
           className="md:hidden text-foreground"
+          aria-label={open ? "关闭菜单" : "打开菜单"}
+          aria-expanded={open}
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
