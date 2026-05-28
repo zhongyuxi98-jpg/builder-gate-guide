@@ -1,5 +1,5 @@
 import { BuilderNav } from "@/components/builder/BuilderNav";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, UserPlus, Globe } from "lucide-react";
 import { useState, useMemo } from "react";
 
 type Project = {
@@ -333,29 +333,88 @@ const ProjectsMatrix = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {g.items.map((p) => (
-                  <a
+                  <div
                     key={p.url}
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block p-5 border border-border rounded-md bg-card hover:border-primary hover:shadow-md transition-all"
+                    className="group flex flex-col p-5 border border-border rounded-md bg-card hover:border-primary hover:shadow-md transition-all"
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
-                        {p.cn ?? p.name}
-                      </h3>
-                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1" />
-                    </div>
-                    {p.cn && <p className="text-xs text-muted-foreground mb-2">{p.name}</p>}
-                    <p className="text-xs text-muted-foreground/70 truncate">
-                      {p.url.replace("https://", "")}
-                    </p>
-                  </a>
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
+                          {p.cn ?? p.name}
+                        </h3>
+                        <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1" />
+                      </div>
+                      {p.cn && <p className="text-xs text-muted-foreground mb-2">{p.name}</p>}
+                      <p className="text-xs text-muted-foreground/70 truncate">
+                        {p.url.replace("https://", "")}
+                      </p>
+                    </a>
+                    <a
+                      href={`/builder#join?project=${encodeURIComponent(p.cn ?? p.name)}`}
+                      className="mt-4 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      我想加入这个项目
+                    </a>
+                  </div>
                 ))}
               </div>
             </section>
           ))}
         </div>
+
+        {/* ===== External / community resources ===== */}
+        <section className="mt-20 pt-10 border-t border-border">
+          <div className="mb-6 flex items-start gap-3">
+            <Globe className="w-6 h-6 text-muted-foreground mt-1" />
+            <div>
+              <h2 className="font-serif-cn text-2xl font-bold text-foreground">他人之门 · 外部知识与学习站点</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                世界上还有很多优秀的学习与知识工具,知识之门并不止于自建。下面是我们持续关注、推荐你也去看看的站点。
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { name: "Khan Academy", cn: "可汗学院", url: "https://www.khanacademy.org", note: "全学科免费课程" },
+              { name: "MIT OpenCourseWare", cn: "麻省理工公开课", url: "https://ocw.mit.edu", note: "大学课程完整资料" },
+              { name: "Coursera", cn: "在线大学课程", url: "https://www.coursera.org", note: "名校认证课程" },
+              { name: "Wikipedia", cn: "维基百科", url: "https://zh.wikipedia.org", note: "人类知识的公共底座" },
+              { name: "Anki", cn: "间隔重复记忆", url: "https://apps.ankiweb.net", note: "应试与长期记忆神器" },
+              { name: "Obsidian", cn: "本地知识库", url: "https://obsidian.md", note: "双链笔记 / 知识图谱" },
+              { name: "Notion", cn: "全能笔记", url: "https://www.notion.so", note: "学习项目管理" },
+              { name: "得到 / 知乎", cn: "中文知识社区", url: "https://www.zhihu.com", note: "中文世界的讨论与梳理" },
+              { name: "B站学习区", cn: "Bilibili", url: "https://www.bilibili.com/v/knowledge", note: "海量免费教学视频" },
+            ].map((r) => (
+              <a
+                key={r.url}
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block p-5 border border-dashed border-border rounded-md bg-card/40 hover:border-primary hover:bg-card transition-all"
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors leading-snug">
+                    {r.cn}
+                  </h3>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 mt-1" />
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">{r.name}</p>
+                <p className="text-xs text-muted-foreground/80">{r.note}</p>
+              </a>
+            ))}
+          </div>
+          <div className="mt-6 p-4 rounded-md border border-border bg-muted/30 text-sm text-muted-foreground">
+            想推荐一个你常用的学习/知识网站给「知识之门」?在
+            <a href="/builder#join" className="text-primary underline underline-offset-2 mx-1">加入表单</a>
+            的「补充说明」里告诉我们名字和链接即可,我们会评估后加入这个外部资源列表。
+          </div>
+        </section>
 
         <footer className="mt-16 pt-8 border-t border-border text-sm text-muted-foreground">
           <p>
