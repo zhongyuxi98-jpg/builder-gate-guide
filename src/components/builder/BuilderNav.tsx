@@ -39,6 +39,12 @@ export const BuilderNav = () => {
           >
             技术栈 →
           </Link>
+          <Link
+            to="/thinking/essence"
+            className="text-sm text-primary font-semibold hover:underline"
+          >
+            思考 →
+          </Link>
         </div>
 
         {/* Mobile toggle */}
