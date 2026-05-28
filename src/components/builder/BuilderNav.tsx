@@ -1,25 +1,29 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const navItems = [
-  { label: "组织精神", href: "#spirit" },
-  { label: "三权结构", href: "#three-powers" },
-  { label: "激励机制", href: "#incentives" },
-  { label: "申请标准", href: "#standards" },
-  { label: "贡献渠道", href: "#channels" },
-  { label: "荣誉证书", href: "#certificate" },
-  { label: "加入申请", href: "#join" },
-];
+import { useLang } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export const BuilderNav = () => {
   const [open, setOpen] = useState(false);
+  const { t } = useLang();
+
+  const navItems = [
+    { label: t("组织精神", "Spirit"), href: "#spirit" },
+    { label: t("三权结构", "Tripartite"), href: "#three-powers" },
+    { label: t("激励机制", "Incentives"), href: "#incentives" },
+    { label: t("申请标准", "Standards"), href: "#standards" },
+    { label: t("贡献渠道", "Channels"), href: "#channels" },
+    { label: t("荣誉证书", "Certificate"), href: "#certificate" },
+    { label: t("加入申请", "Join"), href: "#join" },
+  ];
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-14">
         <a href="/" className="font-serif-cn text-lg font-bold text-foreground tracking-wide">
-          知识之门 <span className="text-primary text-sm font-normal ml-1">建设者</span>
+          {t("知识之门", "Knowledge Gate")}{" "}
+          <span className="text-primary text-sm font-normal ml-1">{t("建设者", "Builders")}</span>
         </a>
 
         {/* Desktop */}
@@ -37,19 +41,19 @@ export const BuilderNav = () => {
             to="/tech-stack"
             className="text-sm text-primary font-semibold hover:underline"
           >
-            技术栈 →
+            {t("技术栈", "Tech Stack")} →
           </Link>
           <Link
             to="/thinking/essence"
             className="text-sm text-primary font-semibold hover:underline"
           >
-            思考 →
+            {t("思考", "Thinking")} →
           </Link>
           <Link
             to="/playbook/5min-sop"
             className="text-sm text-primary font-semibold hover:underline"
           >
-            速通 SOP →
+            {t("速通 SOP", "5-min SOP")} →
           </Link>
           <a
             href="https://learn-node-link.lovable.app"
@@ -57,25 +61,29 @@ export const BuilderNav = () => {
             rel="noopener noreferrer"
             className="text-sm text-primary font-semibold hover:underline"
           >
-            知识图谱 ↗
+            {t("知识图谱", "Knowledge Graph")} ↗
           </a>
           <Link
             to="/projects"
             className="text-sm text-primary font-semibold hover:underline"
           >
-            项目矩阵 →
+            {t("项目矩阵", "Projects")} →
           </Link>
+          <LanguageSwitcher />
         </div>
 
         {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden text-foreground"
-          aria-label={open ? "关闭菜单" : "打开菜单"}
-          aria-expanded={open}
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSwitcher compact />
+          <button
+            onClick={() => setOpen(!open)}
+            className="text-foreground"
+            aria-label={open ? t("关闭菜单", "Close menu") : t("打开菜单", "Open menu")}
+            aria-expanded={open}
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -96,7 +104,7 @@ export const BuilderNav = () => {
             onClick={() => setOpen(false)}
             className="block text-sm text-primary font-semibold"
           >
-            技术栈 →
+            {t("技术栈", "Tech Stack")} →
           </Link>
           <a
             href="https://learn-node-link.lovable.app"
@@ -105,7 +113,7 @@ export const BuilderNav = () => {
             onClick={() => setOpen(false)}
             className="block text-sm text-primary font-semibold"
           >
-            知识图谱 ↗
+            {t("知识图谱", "Knowledge Graph")} ↗
           </a>
         </div>
       )}
