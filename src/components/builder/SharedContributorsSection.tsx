@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   ExternalLink,
   LogIn,
@@ -52,7 +53,7 @@ const SOURCE_NOTE_EN = "Source: enterthedoor.org Builder Protocol";
 const RULE_PRESETS: Record<
   string,
   {
-    icon: React.ComponentType<{ size?: number; className?: string }>;
+    icon: LucideIcon;
     tone: string;
     title: { zh: string; en: string };
     summary: (v: any) => { zh: string; en: string };
