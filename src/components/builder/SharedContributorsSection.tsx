@@ -420,33 +420,67 @@ export const SharedContributorsSection = () => {
                 {t(SOURCE_NOTE_ZH, SOURCE_NOTE_EN)}
               </span>
             </div>
+            <p className="text-xs text-muted-foreground mb-4">
+              {t(
+                "下面这几条规则定义了「知识之门」是怎么运转的：谁能加入、贡献怎么通过、收益怎么分。所有规则由委员会共同维护。",
+                "These rules define how Knowledge Gate works: who joins, how contributions get approved, how revenue is shared. All maintained by the committee.",
+              )}
+            </p>
             {rules.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 {t("暂无生效规则。", "No active rules.")}
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {rules.map((r) => (
-                  <div
-                    key={r.id}
-                    className="rounded-lg border border-border bg-background/50 p-3"
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <code className="text-xs font-mono text-primary">{r.rule_key}</code>
-                      {r.category && (
-                        <span className="text-[10px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">
-                          {r.category}
+                {rules.map((r) => {
+                  const d = describeRule(r, lang);
+                  const Icon = d.Icon;
+                  return (
+                    <details
+                      key={r.id}
+                      className="group rounded-lg border border-border bg-background/50 p-4 hover:shadow-elevated transition-shadow"
+                    >
+                      <summary className="list-none cursor-pointer flex items-start gap-3">
+                        <span
+                          className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center border ${d.tone}`}
+                        >
+                          <Icon size={18} />
                         </span>
-                      )}
-                    </div>
-                    {r.description && (
-                      <p className="text-xs text-muted-foreground mb-2">{r.description}</p>
-                    )}
-                    <pre className="text-[11px] font-mono text-foreground/80 bg-muted/50 rounded p-2 overflow-x-auto">
-                      {JSON.stringify(r.rule_value, null, 2)}
-                    </pre>
-                  </div>
-                ))}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="font-semibold text-sm text-foreground">
+                              {d.title}
+                            </h4>
+                            {d.badges.map((b) => (
+                              <span
+                                key={b}
+                                className="text-[10px] px-1.5 py-0.5 rounded border bg-primary/10 text-primary border-primary/30"
+                              >
+                                {b}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                            {d.summary}
+                          </p>
+                        </div>
+                        <ChevronDown
+                          size={14}
+                          className="shrink-0 mt-2 text-muted-foreground transition-transform group-open:rotate-180"
+                        />
+                      </summary>
+                      <div className="mt-3 pt-3 border-t border-border/60">
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                          {t("原始数据", "Raw data")} ·{" "}
+                          <code className="font-mono">{r.rule_key}</code>
+                        </div>
+                        <pre className="text-[11px] font-mono text-foreground/70 bg-muted/40 rounded p-2 overflow-x-auto">
+                          {JSON.stringify(r.rule_value, null, 2)}
+                        </pre>
+                      </div>
+                    </details>
+                  );
+                })}
               </div>
             )}
           </div>
