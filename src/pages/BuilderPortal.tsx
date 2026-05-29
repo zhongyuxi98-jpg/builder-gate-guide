@@ -11,6 +11,7 @@ import { ContributionChannelsSection } from "@/components/builder/ContributionCh
 import { CertificateSection } from "@/components/builder/CertificateSection";
 import { JoinFormSection } from "@/components/builder/JoinFormSection";
 import { BuilderNav } from "@/components/builder/BuilderNav";
+import { SharedContributorsSection } from "@/components/builder/SharedContributorsSection";
 
 const BuilderPortal = () => {
   return (
@@ -18,6 +19,7 @@ const BuilderPortal = () => {
       <BuilderNav />
       <BuilderHero />
       <div className="max-w-4xl mx-auto px-6 pb-32 space-y-24">
+        <SharedContributorsSection />
         <SpiritSection />
         <ProtocolSection />
         <ThreePowersSection />

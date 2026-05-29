@@ -1,0 +1,334 @@
+import { useEffect, useState } from "react";
+import { ExternalLink, LogIn, LogOut, Loader2, Users, Award, Scale } from "lucide-react";
+import type { Session } from "@supabase/supabase-js";
+import {
+  sharedSupabase,
+  type SharedContributor,
+  type SharedContribution,
+  type SharedGovernanceRule,
+  ROLE_RANK,
+} from "@/integrations/enterthedoor/client";
+import { SectionHeading } from "./SectionHeading";
+import { useLang } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+
+const ROLE_LABEL = {
+  founder: { zh: "创始人", en: "Founder" },
+  committee_member: { zh: "委员会", en: "Committee" },
+  core_contributor: { zh: "核心共建者", en: "Core Contributor" },
+  contributor: { zh: "共建者", en: "Contributor" },
+  observer: { zh: "观察者", en: "Observer" },
+} as const;
+
+const ROLE_COLOR: Record<string, string> = {
+  founder: "bg-primary/15 text-primary border-primary/30",
+  committee_member: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+  core_contributor: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
+  contributor: "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30",
+  observer: "bg-muted text-muted-foreground border-border",
+};
+
+const SOURCE_NOTE_ZH = "数据来源：enterthedoor.org 共建者协议";
+const SOURCE_NOTE_EN = "Source: enterthedoor.org Builder Protocol";
+
+export const SharedContributorsSection = () => {
+  const { t, lang } = useLang();
+  const [contributors, setContributors] = useState<SharedContributor[]>([]);
+  const [contributions, setContributions] = useState<SharedContribution[]>([]);
+  const [rules, setRules] = useState<SharedGovernanceRule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    sharedSupabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: sub } = sharedSupabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const [cRes, conRes, rRes] = await Promise.all([
+        sharedSupabase.from("contributors").select("*").eq("is_public", true),
+        sharedSupabase
+          .from("contributions")
+          .select("*")
+          .or("status.eq.approved,status.eq.merged")
+          .order("created_at", { ascending: false })
+          .limit(12),
+        sharedSupabase.from("governance_rules").select("*").eq("is_active", true),
+      ]);
+      if (cancelled) return;
+      const list = ((cRes.data as SharedContributor[]) ?? []).sort((a, b) => {
+        const r = (ROLE_RANK[a.role] ?? 99) - (ROLE_RANK[b.role] ?? 99);
+        if (r !== 0) return r;
+        return (b.total_contribution_points ?? 0) - (a.total_contribution_points ?? 0);
+      });
+      setContributors(list);
+      setContributions((conRes.data as SharedContribution[]) ?? []);
+      setRules((rRes.data as SharedGovernanceRule[]) ?? []);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const signIn = async () => {
+    const { error } = await sharedSupabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/builder" },
+    });
+    if (error) {
+      toast({
+        title: t("登录失败", "Sign-in failed"),
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const signOut = async () => {
+    await sharedSupabase.auth.signOut();
+    toast({ title: t("已退出", "Signed out") });
+  };
+
+  return (
+    <section className="scroll-mt-20" id="shared">
+      <SectionHeading
+        id="shared-heading"
+        number="00"
+        title={t("共建者中心", "Builder Hub")}
+        subtitle={t(
+          "与 enterthedoor.org 共享数据 · 一次登录，跨项目共建",
+          "Shared with enterthedoor.org · One identity across projects",
+        )}
+      />
+
+      {/* Action bar */}
+      <div className="flex flex-wrap items-center gap-3 mb-8">
+        <a
+          href="https://enterthedoor.org/contributors"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-semibold"
+        >
+          <ExternalLink size={14} />
+          {t("返回 enterthedoor.org 共建者中心", "Back to enterthedoor.org Hub")}
+        </a>
+        <div className="ml-auto">
+          {session ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground">
+                {t("已登录", "Signed in as")} · {session.user.email}
+              </span>
+              <Button size="sm" variant="outline" onClick={signOut}>
+                <LogOut size={14} /> {t("退出", "Sign out")}
+              </Button>
+            </div>
+          ) : (
+            <Button size="sm" onClick={signIn}>
+              <LogIn size={14} /> {t("用 Google 登录共建者账号", "Sign in with Google")}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-muted-foreground">
+          <Loader2 className="animate-spin mr-2" size={18} />
+          {t("正在从 enterthedoor.org 加载共建数据…", "Loading shared data from enterthedoor.org…")}
+        </div>
+      ) : (
+        <div className="space-y-10">
+          {/* Contributors */}
+          <div className="rounded-xl border border-border bg-card p-6 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-serif-cn text-xl font-semibold text-card-foreground flex items-center gap-2">
+                <Users size={18} className="text-primary" />
+                {t("共建者名册", "Contributors")}
+                <span className="text-xs font-normal text-muted-foreground">
+                  ({contributors.length})
+                </span>
+              </h3>
+              <span className="text-[11px] text-muted-foreground italic">
+                {t(SOURCE_NOTE_ZH, SOURCE_NOTE_EN)}
+              </span>
+            </div>
+            {contributors.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {t("暂无公开共建者。", "No public contributors yet.")}
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {contributors.map((c) => (
+                  <div
+                    key={c.id}
+                    className="rounded-lg border border-border bg-background/50 p-4 hover:shadow-elevated transition-shadow"
+                  >
+                    <div className="flex items-start gap-3">
+                      {c.avatar_url ? (
+                        <img
+                          src={c.avatar_url}
+                          alt={c.display_name}
+                          className="w-10 h-10 rounded-full object-cover border border-border"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-muted-foreground">
+                          {c.display_name?.[0] ?? "?"}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-sm text-foreground truncate">
+                            {c.display_name}
+                          </span>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded border ${ROLE_COLOR[c.role] ?? ROLE_COLOR.contributor}`}
+                          >
+                            {lang === "zh"
+                              ? ROLE_LABEL[c.role]?.zh ?? c.role
+                              : ROLE_LABEL[c.role]?.en ?? c.role}
+                          </span>
+                        </div>
+                        {c.bio && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.bio}</p>
+                        )}
+                        <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
+                          <span className="font-mono text-primary">
+                            {c.total_contribution_points} {t("分", "pts")}
+                          </span>
+                          {c.github_handle && (
+                            <a
+                              href={`https://github.com/${c.github_handle}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-primary"
+                            >
+                              @{c.github_handle}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Contributions */}
+          <div className="rounded-xl border border-border bg-card p-6 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-serif-cn text-xl font-semibold text-card-foreground flex items-center gap-2">
+                <Award size={18} className="text-primary" />
+                {t("最新贡献", "Recent Contributions")}
+              </h3>
+              <span className="text-[11px] text-muted-foreground italic">
+                {t(SOURCE_NOTE_ZH, SOURCE_NOTE_EN)}
+              </span>
+            </div>
+            {contributions.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {t("暂无已通过贡献。", "No approved contributions yet.")}
+              </p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {contributions.map((co) => (
+                  <li key={co.id} className="py-3 flex items-start gap-3">
+                    <span
+                      className={`text-[10px] mt-1 px-1.5 py-0.5 rounded border ${
+                        co.status === "merged"
+                          ? "bg-primary/15 text-primary border-primary/30"
+                          : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                      }`}
+                    >
+                      {co.status}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium text-foreground">{co.title}</span>
+                        <span className="text-[11px] text-muted-foreground">
+                          · {co.contribution_type}
+                        </span>
+                        {co.target_name && (
+                          <span className="text-[11px] text-muted-foreground">
+                            → {co.target_name}
+                          </span>
+                        )}
+                      </div>
+                      {co.description && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          {co.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-3 mt-1 text-[11px] text-muted-foreground">
+                        <span className="font-mono text-primary">+{co.points}</span>
+                        <span>{new Date(co.created_at).toLocaleDateString()}</span>
+                        {co.evidence_url && (
+                          <a
+                            href={co.evidence_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-primary inline-flex items-center gap-0.5"
+                          >
+                            <ExternalLink size={10} /> {t("证据", "evidence")}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Governance rules */}
+          <div className="rounded-xl border border-border bg-card p-6 shadow-card">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-serif-cn text-xl font-semibold text-card-foreground flex items-center gap-2">
+                <Scale size={18} className="text-primary" />
+                {t("协议规则", "Governance Rules")}
+              </h3>
+              <span className="text-[11px] text-muted-foreground italic">
+                {t(SOURCE_NOTE_ZH, SOURCE_NOTE_EN)}
+              </span>
+            </div>
+            {rules.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {t("暂无生效规则。", "No active rules.")}
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {rules.map((r) => (
+                  <div
+                    key={r.id}
+                    className="rounded-lg border border-border bg-background/50 p-3"
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <code className="text-xs font-mono text-primary">{r.rule_key}</code>
+                      {r.category && (
+                        <span className="text-[10px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">
+                          {r.category}
+                        </span>
+                      )}
+                    </div>
+                    {r.description && (
+                      <p className="text-xs text-muted-foreground mb-2">{r.description}</p>
+                    )}
+                    <pre className="text-[11px] font-mono text-foreground/80 bg-muted/50 rounded p-2 overflow-x-auto">
+                      {JSON.stringify(r.rule_value, null, 2)}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+};
