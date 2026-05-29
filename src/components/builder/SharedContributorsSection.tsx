@@ -1,5 +1,21 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, LogIn, LogOut, Loader2, Users, Award, Scale } from "lucide-react";
+import {
+  ExternalLink,
+  LogIn,
+  LogOut,
+  Loader2,
+  Users,
+  Award,
+  Scale,
+  Gift,
+  CheckCircle2,
+  UsersRound,
+  Vote,
+  BadgeCheck,
+  Coins,
+  Bot,
+  ChevronDown,
+} from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import {
   sharedSupabase,
@@ -31,6 +47,112 @@ const ROLE_COLOR: Record<string, string> = {
 
 const SOURCE_NOTE_ZH = "数据来源：enterthedoor.org 共建者协议";
 const SOURCE_NOTE_EN = "Source: enterthedoor.org Builder Protocol";
+
+// 把后端 rule_key + rule_value 翻译成人话
+const RULE_PRESETS: Record<
+  string,
+  {
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    tone: string;
+    title: { zh: string; en: string };
+    summary: (v: any) => { zh: string; en: string };
+    badges?: (v: any) => Array<{ zh: string; en: string }>;
+  }
+> = {
+  core_doors_free: {
+    icon: Gift,
+    tone: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
+    title: { zh: "核心学科永久免费", en: "Core Subjects Free Forever" },
+    summary: () => ({
+      zh: "由开源共建者建设的核心学科之门，永久对所有学生免费。",
+      en: "Core subject doors built by open-source contributors stay free forever.",
+    }),
+    badges: (v) =>
+      v?.enforced ? [{ zh: "强制执行", en: "Enforced" }] : [],
+  },
+  contribution_approval_quorum: {
+    icon: CheckCircle2,
+    tone: "text-primary bg-primary/10 border-primary/30",
+    title: { zh: "贡献审核门槛", en: "Contribution Approval" },
+    summary: (v) => ({
+      zh: `任何贡献至少需 ${v?.min_reviewers ?? 2} 位委员会成员审核通过。`,
+      en: `Any contribution needs at least ${v?.min_reviewers ?? 2} committee approvals.`,
+    }),
+  },
+  committee_max_size: {
+    icon: UsersRound,
+    tone: "text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/30",
+    title: { zh: "委员会规模上限", en: "Committee Size Cap" },
+    summary: (v) => ({
+      zh: `委员会最多 ${v?.max ?? 11} 人，保持决策效率。`,
+      en: `Committee is capped at ${v?.max ?? 11} members to stay nimble.`,
+    }),
+  },
+  protocol_amendment_threshold: {
+    icon: Vote,
+    tone: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30",
+    title: { zh: "协议修改门槛", en: "Protocol Amendment" },
+    summary: (v) => {
+      const pct = Math.round((v?.approval_ratio ?? 0.67) * 100);
+      return {
+        zh: `修改协议需委员会 ${pct}% 同意（约 2/3 多数）。`,
+        en: `Amending the protocol requires ${pct}% committee approval (≈2/3).`,
+      };
+    },
+  },
+  contributor_recognition: {
+    icon: BadgeCheck,
+    tone: "text-primary bg-primary/10 border-primary/30",
+    title: { zh: "共建者公开认可", en: "Public Recognition" },
+    summary: () => ({
+      zh: "所有通过审核的共建者都会获得公开主页与荣誉证书资格。",
+      en: "Every approved contributor gets a public profile and certificate.",
+    }),
+  },
+  revenue_model: {
+    icon: Coins,
+    tone: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30",
+    title: { zh: "收益分配模型", en: "Revenue Model" },
+    summary: (v) => {
+      const fee = Math.round((v?.platform_fee ?? 0.15) * 100);
+      return {
+        zh: `核心内容免费；老师可对进阶内容收费，平台抽取 ${fee}%。`,
+        en: `Core content is free; teachers may charge for premium content with a ${fee}% platform fee.`,
+      };
+    },
+  },
+  ai_continuity: {
+    icon: Bot,
+    tone: "text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/30",
+    title: { zh: "AI 接管机制", en: "AI Continuity" },
+    summary: () => ({
+      zh: "无委员会成员在线时，AI 按协议规则自动维持运行。",
+      en: "When no committee members are active, AI keeps things running by protocol.",
+    }),
+  },
+};
+
+function describeRule(r: SharedGovernanceRule, lang: "zh" | "en") {
+  const preset = RULE_PRESETS[r.rule_key];
+  if (preset) {
+    return {
+      Icon: preset.icon,
+      tone: preset.tone,
+      title: preset.title[lang],
+      summary: preset.summary(r.rule_value)[lang],
+      badges: (preset.badges?.(r.rule_value) ?? []).map((b) => b[lang]),
+    };
+  }
+  // 未知规则的兜底：用 description，避免再暴露 JSON
+  return {
+    Icon: Scale,
+    tone: "text-muted-foreground bg-muted border-border",
+    title: r.rule_key.replace(/_/g, " "),
+    summary:
+      r.description ?? (lang === "zh" ? "（暂无描述）" : "(no description)"),
+    badges: [] as string[],
+  };
+}
 
 export const SharedContributorsSection = () => {
   const { t, lang } = useLang();
