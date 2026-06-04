@@ -16,27 +16,28 @@ import { DecisionAidSection } from "@/components/builder/DecisionAidSection";
 import { WhoUsesThisSection } from "@/components/builder/WhoUsesThisSection";
 import { BuilderRolesSection } from "@/components/builder/BuilderRolesSection";
 import { IdentityFluiditySection } from "@/components/builder/IdentityFluiditySection";
+import { MobileCollapse } from "@/components/builder/MobileCollapse";
 
 const BuilderPortal = () => {
   return (
     <div className="min-h-screen bg-background">
       <BuilderNav />
       <BuilderHero />
-      <div className="max-w-4xl mx-auto px-6 pb-32 space-y-24">
-        <WhatIsThisSection />
+      <div className="max-w-4xl mx-auto px-6 pb-32 space-y-12 md:space-y-24">
+        <MobileCollapse><WhatIsThisSection /></MobileCollapse>
         <SharedContributorsSection />
-        <SpiritSection />
-        <WhoUsesThisSection />
-        <ProtocolSection />
-        <ThreePowersSection />
-        <IncentiveSection />
-        <ImpeachmentSection />
-        <ContentRulesSection />
-        <RoadmapSection />
-        <BuilderRolesSection />
-        <IdentityFluiditySection />
-        <ContributionChannelsSection />
-        <CertificateSection />
+        <MobileCollapse><SpiritSection /></MobileCollapse>
+        <MobileCollapse><WhoUsesThisSection /></MobileCollapse>
+        <MobileCollapse><ProtocolSection /></MobileCollapse>
+        <MobileCollapse><ThreePowersSection /></MobileCollapse>
+        <MobileCollapse><IncentiveSection /></MobileCollapse>
+        <MobileCollapse><ImpeachmentSection /></MobileCollapse>
+        <MobileCollapse><ContentRulesSection /></MobileCollapse>
+        <MobileCollapse><RoadmapSection /></MobileCollapse>
+        <MobileCollapse><BuilderRolesSection /></MobileCollapse>
+        <MobileCollapse><IdentityFluiditySection /></MobileCollapse>
+        <MobileCollapse><ContributionChannelsSection /></MobileCollapse>
+        <MobileCollapse><CertificateSection /></MobileCollapse>
         <DecisionAidSection />
         <JoinFormSection />
       </div>
