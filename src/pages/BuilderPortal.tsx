@@ -6,7 +6,6 @@ import { IncentiveSection } from "@/components/builder/IncentiveSection";
 import { ContentRulesSection } from "@/components/builder/ContentRulesSection";
 import { ImpeachmentSection } from "@/components/builder/ImpeachmentSection";
 import { RoadmapSection } from "@/components/builder/RoadmapSection";
-import { ApplicationStandardsSection } from "@/components/builder/ApplicationStandardsSection";
 import { ContributionChannelsSection } from "@/components/builder/ContributionChannelsSection";
 import { CertificateSection } from "@/components/builder/CertificateSection";
 import { JoinFormSection } from "@/components/builder/JoinFormSection";
@@ -14,6 +13,9 @@ import { BuilderNav } from "@/components/builder/BuilderNav";
 import { SharedContributorsSection } from "@/components/builder/SharedContributorsSection";
 import { WhatIsThisSection } from "@/components/builder/WhatIsThisSection";
 import { DecisionAidSection } from "@/components/builder/DecisionAidSection";
+import { WhoUsesThisSection } from "@/components/builder/WhoUsesThisSection";
+import { BuilderRolesSection } from "@/components/builder/BuilderRolesSection";
+import { IdentityFluiditySection } from "@/components/builder/IdentityFluiditySection";
 
 const BuilderPortal = () => {
   return (
@@ -24,16 +26,18 @@ const BuilderPortal = () => {
         <WhatIsThisSection />
         <SharedContributorsSection />
         <SpiritSection />
+        <WhoUsesThisSection />
         <ProtocolSection />
         <ThreePowersSection />
         <IncentiveSection />
-        <ContentRulesSection />
         <ImpeachmentSection />
-        <ApplicationStandardsSection />
-        <ContributionChannelsSection />
-        <DecisionAidSection />
-        <CertificateSection />
+        <ContentRulesSection />
         <RoadmapSection />
+        <BuilderRolesSection />
+        <IdentityFluiditySection />
+        <ContributionChannelsSection />
+        <CertificateSection />
+        <DecisionAidSection />
         <JoinFormSection />
       </div>
     </div>
