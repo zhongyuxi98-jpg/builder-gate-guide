@@ -83,7 +83,7 @@ export const WhatIsThisSection = () => {
         </div>
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="text-center px-3 py-2 rounded-lg bg-primary/10 border border-primary/30 text-xs">
-            {t("第一参考实现 · 雨丝丝版", "Reference v1 · YusisiBan")}
+            {t("第一参考实现 · Alicia 版", "Reference v1 · Alicia")}
           </div>
           <div className="text-center px-3 py-2 rounded-lg bg-muted border border-border text-xs text-muted-foreground italic">
             {t("第二实现 · 待你建", "Implementation #2 · awaiting")}
