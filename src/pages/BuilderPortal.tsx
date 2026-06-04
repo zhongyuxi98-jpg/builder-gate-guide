@@ -12,6 +12,8 @@ import { CertificateSection } from "@/components/builder/CertificateSection";
 import { JoinFormSection } from "@/components/builder/JoinFormSection";
 import { BuilderNav } from "@/components/builder/BuilderNav";
 import { SharedContributorsSection } from "@/components/builder/SharedContributorsSection";
+import { WhatIsThisSection } from "@/components/builder/WhatIsThisSection";
+import { DecisionAidSection } from "@/components/builder/DecisionAidSection";
 
 const BuilderPortal = () => {
   return (
@@ -19,6 +21,7 @@ const BuilderPortal = () => {
       <BuilderNav />
       <BuilderHero />
       <div className="max-w-4xl mx-auto px-6 pb-32 space-y-24">
+        <WhatIsThisSection />
         <SharedContributorsSection />
         <SpiritSection />
         <ProtocolSection />
@@ -28,6 +31,7 @@ const BuilderPortal = () => {
         <ImpeachmentSection />
         <ApplicationStandardsSection />
         <ContributionChannelsSection />
+        <DecisionAidSection />
         <CertificateSection />
         <RoadmapSection />
         <JoinFormSection />
